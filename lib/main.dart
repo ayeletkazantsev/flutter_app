@@ -25,8 +25,6 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bloc = LoginProvider.of(context);
-
     return new Scaffold(
         body: Center(
             child: Column(
@@ -47,13 +45,13 @@ class HomePage extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    _facebookSignInButon(bloc)
+                    _facebookSignInButon()
                   ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    _googleSignInButton(bloc)
+                    _googleSignInButton()
                   ],
                 )
               ],
@@ -61,12 +59,9 @@ class HomePage extends StatelessWidget {
   }
 }
 
-Widget _facebookSignInButon(LoginBloc bloc)
+Widget _facebookSignInButon()
 {
-  return StreamBuilder(
-    stream: bloc.googleAccount, //TODO: change to facebook later
-    builder: (BuildContext context, AsyncSnapshot<GoogleSignInAccount> snapshot) {
-      return  Expanded(
+  return Expanded(
         child: Padding(
           padding:
           const EdgeInsets.only(
@@ -84,27 +79,18 @@ Widget _facebookSignInButon(LoginBloc bloc)
           ),
         ),
       );
-    }
-  );
 }
 
-Widget _googleSignInButton(LoginBloc bloc)
+Widget _googleSignInButton()
 {
-  return StreamBuilder(
-    stream: bloc.googleAccount,
-    builder: (BuildContext context, AsyncSnapshot<GoogleSignInAccount> snapshot) {
-      return Expanded(
+  return Expanded(
         child: Padding(
           padding:
           const EdgeInsets.only(
               left: 20.0, right: 10.0, top: 10.0),
           child: GestureDetector(
             onTap: () {
-              !snapshot.hasData
-                  ? () async {
-                bloc.sigInGoogle();
-              }
-                  : null;
+                authService.signInWithGoogle();
             },
             child: Container(
               alignment: Alignment.center,
@@ -120,7 +106,5 @@ Widget _googleSignInButton(LoginBloc bloc)
           ),
         ),
       );
-    }
-  );
 }
 

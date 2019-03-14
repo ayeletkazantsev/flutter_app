@@ -5,43 +5,27 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart';
 
+class Auth {
 
-class LoginBloc {
-  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email','https://www.googleapis.com/auth/contacts.readonly']);
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  // StreamController
-  final BehaviorSubject<GoogleSignInAccount> _google = BehaviorSubject<GoogleSignInAccount>();
+//  Auth(GoogleSignIn googleSignIn, FirebaseAuth firebaseAuth)
+//  {
+//    this._googleSignIn = googleSignIn;
+//    this._firebaseAuth = firebaseAuth;
+//  }
 
-  //Streams
-  Stream<GoogleSignInAccount> get googleAccount => _google.stream;
-
-  sigInGoogle() async {
-    _googleSignIn.signIn().then((GoogleSignInAccount account) {
-      _google.sink.add(account);
-    });
-  }
-  signOutGoogle() async {
-    _googleSignIn.signOut().then(_google.sink.add);
-  }
-  dispose() {
-    _google.close();
+  Future<FirebaseUser> signInWithGoogle() async {
+    final GoogleSignInAccount googleAccount = await _googleSignIn.signIn();
+    //TODO: handle null googleAcount
+    final GoogleSignInAuthentication googleAuth = await googleAccount.authentication;
+    final AuthCredential credentials = GoogleAuthProvider.getCredential(idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
+    return _firebaseAuth.signInWithCredential(credentials);
   }
 }
 
-class LoginProvider extends InheritedWidget {
-  final LoginBloc bloc;
-
-  LoginProvider({Key key, Widget child})
-      : bloc = LoginBloc(),
-        super(key: key, child: child);
-
-  @override
-  bool updateShouldNotify(InheritedWidget oldWidget) => true;
-
-  static LoginBloc of(BuildContext context) {
-    return (context.inheritFromWidgetOfExactType(LoginProvider) as LoginProvider).bloc;
-  }
-}
+final Auth authService = Auth();
 
 /**
 class AuthService {
