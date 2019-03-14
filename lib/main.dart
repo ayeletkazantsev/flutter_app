@@ -100,7 +100,11 @@ Widget _googleSignInButton(LoginBloc bloc)
               left: 20.0, right: 10.0, top: 10.0),
           child: GestureDetector(
             onTap: () {
-
+              !snapshot.hasData
+                  ? () async {
+                bloc.sigInGoogle();
+              }
+                  : null;
             },
             child: Container(
               alignment: Alignment.center,
